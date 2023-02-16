@@ -30,7 +30,7 @@ test "allocation" {
 }
 ```
 
-The [`std.heap.FixedBufferAllocator`](https://ziglang.org/documentation/master/std/#std;heap.FixedBufferAllocator) is an allocator that allocates memory into a fixed buffer, and does not make any heap allocations. This is useful when heap usage is not wanted, for example when writing a kernel. It may also be considered for performance reasons. It will give you the error `OutOfMemory` if it has run out of bytes.
+The [`std.heap.FixedBufferAllocator`](https://ziglang.org/documentation/master/std/#std;heap.FixedBufferAllocator) is an allocator that allocates memory from a fixed buffer, and does not make any heap allocations. This is useful when heap usage is not wanted, for example when writing a kernel. It may also be considered for performance reasons. It will give you the error `OutOfMemory` if it has run out of bytes.
 
 ```zig
 test "fixed buffer allocator" {
@@ -165,7 +165,7 @@ test "make dir" {
     try std.fs.cwd().makeDir("test-tmp");
     const dir = try std.fs.cwd().openDir(
         "test-tmp",
-        .{ .iterate = true },
+        .{},
     );
     defer {
         std.fs.cwd().deleteTree("test-tmp") catch unreachable;
@@ -176,7 +176,7 @@ test "make dir" {
     _ = try dir.createFile("z", .{});
 
     var file_count: usize = 0;
-    var iter = dir.iterate();
+    var iter = std.fs.openIterableDir("test-tmp", .{});
     while (try iter.next()) |entry| {
         if (entry.kind == .File) file_count += 1;
     }
